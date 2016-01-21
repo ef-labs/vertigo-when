@@ -9,7 +9,7 @@ import io.vertx.core.Handler;
 import net.kuujo.vertigo.component.ComponentInstance;
 import net.kuujo.vertigo.io.VertigoMessage;
 
-public class DefaultWhenComponentInstance<T> implements WhenComponentInstance {
+public class DefaultWhenComponentInstance implements WhenComponentInstance {
 
     private final ComponentInstance component;
     private final When when;

@@ -24,7 +24,7 @@ public class DefaultWhenVertigoHandler<T> implements WhenVertigoHandler<T> {
     }
 
     @Override
-    public Promise<T> onError(Throwable throwable) {
+    public Promise<T> onReject(Throwable throwable) {
         completeHandler.handle(Future.failedFuture(throwable));
         return when.reject(throwable);
     }

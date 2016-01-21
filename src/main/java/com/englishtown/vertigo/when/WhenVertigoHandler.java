@@ -20,6 +20,6 @@ public interface WhenVertigoHandler<T> {
      * @param throwable
      * @return
      */
-    Promise<T> onError(Throwable throwable);
+    Promise<T> onReject(Throwable throwable);
 
 }

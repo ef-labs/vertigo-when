@@ -47,14 +47,14 @@ public interface WhenComponentInstance {
      * For example:
      *  WhenComponentInstance ci;
      *      [...]
-     *      .then(ci.onSuccess(completeHandler), ci.onError(completeHandler));
+     *      .then(ci.onSuccess(completeHandler), ci.onReject(completeHandler));
      *
      * @param completeHandler
      * @param <T>
      * @return A function delegate that handles the error and forwards the result.
      */
-    default  <T> Function<Throwable, Promise<T>> onError(Handler<AsyncResult<Void>> completeHandler) {
-        return this.<T>handler(completeHandler)::onError;
+    default  <T> Function<Throwable, Promise<T>> onReject(Handler<AsyncResult<Void>> completeHandler) {
+        return this.<T>handler(completeHandler)::onReject;
     }
 
     /**
@@ -63,7 +63,7 @@ public interface WhenComponentInstance {
      * For example:
      *  WhenComponentInstance ci;
      *      [...]
-     *      .then(ci.onSuccess(completeHandler), ci.onError(completeHandler));
+     *      .then(ci.onSuccess(completeHandler), ci.onReject(completeHandler));
      *
      * @param completeHandler
      * @param <T>

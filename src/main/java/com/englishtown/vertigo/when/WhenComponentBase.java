@@ -16,9 +16,18 @@ import java.util.function.Function;
 public abstract class WhenComponentBase extends AbstractComponent {
 
     private final When when;
+    private final WhenVertigoFactory whenVertigoFactory;
+    private WhenComponentInstance whenComponent;
 
-    public WhenComponentBase(When when) {
-        this.when = when;
+    public WhenComponentBase(WhenVertigoFactory whenVertigoFactory) {
+        this.whenVertigoFactory = whenVertigoFactory;
+        this.when = this.whenVertigoFactory.getWhen();
+    }
+
+    @Override
+    public void start() throws Exception {
+        super.start();
+        this.whenComponent = whenVertigoFactory.getComponentInstance(this.component());
     }
 
     public When when() {
@@ -26,24 +35,23 @@ public abstract class WhenComponentBase extends AbstractComponent {
     }
 
     public WhenComponentInstance whenComponent() {
-        return new DefaultWhenComponentInstance(this.component(), when);
+        return whenComponent;
     }
 
-    protected <T> Function<Throwable, Promise<T>> onError(VertigoMessage<?> message) {
-        return whenComponent().onError(message::handle);
+    protected <T> Function<Throwable, Promise<T>> onReject(VertigoMessage<?> message) {
+        return whenComponent().onReject(message::handle);
     }
 
     protected <T> Function<T, Promise<T>> onSuccess(VertigoMessage<?> message) {
         return whenComponent().onSuccess(message::handle);
     }
 
-    protected <T> Function<Throwable, Promise<T>> onError(Handler<AsyncResult<Void>> completeHandler) {
-        return whenComponent().onError(completeHandler);
+    protected <T> Function<Throwable, Promise<T>> onReject(Handler<AsyncResult<Void>> completeHandler) {
+        return whenComponent().onReject(completeHandler);
     }
 
     protected <T> Function<T, Promise<T>> onSuccess(Handler<AsyncResult<Void>> completeHandler) {
         return whenComponent().onSuccess(completeHandler);
-
     }
 
 }
