@@ -5,7 +5,7 @@ import io.vertx.core.MultiMap;
 
 /**
  * When wrapper for a Vertigo output port.
- * @param <T>
+ * @param <T> The type of message to send.
  */
 public interface WhenOutputPort<T> {
 
@@ -17,7 +17,7 @@ public interface WhenOutputPort<T> {
      */
     default Promise<T> send(T message) {
         return this.send(message, null);
-    };
+    }
 
     /**
      * Sends a message on the output.

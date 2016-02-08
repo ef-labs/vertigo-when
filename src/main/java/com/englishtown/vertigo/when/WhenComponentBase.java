@@ -38,18 +38,64 @@ public abstract class WhenComponentBase extends AbstractComponent {
         return whenComponent;
     }
 
+    /**
+     * Creates a handler for failing a message. Useful for creating a shorthand fail in a when chain.
+     * <code>
+     *     [...]
+     *     .then(onSuccess(message), onReject(message))
+     *     .then [...]
+     * </code>
+     * @param message The message to ack or fail.
+     * @param <T> The type of input/output value.
+     * @return A handler.
+     */
     protected <T> Function<Throwable, Promise<T>> onReject(VertigoMessage<?> message) {
         return whenComponent().onReject(message::handle);
     }
 
+    /**
+     * Creates a handler for acking a message. Useful for creating a shorthand ack in a when chain.
+     * <code>
+     *     [...]
+     *     .then(onSuccess(message), onReject(message))
+     *     .then [...]
+     * </code>
+     * @param message The message to ack or fail.
+     * @param <T> The type of input/output value.
+     * @return A  handler.
+     */
     protected <T> Function<T, Promise<T>> onSuccess(VertigoMessage<?> message) {
         return whenComponent().onSuccess(message::handle);
     }
 
+    /**
+     * Creates a when wrapper to forward a failure to an async handler. Useful for creating a shorthand result in a
+     * when chain.
+     * <code>
+     *     [...]
+     *     .then(onSuccess(asyncHandler), onReject(asyncHandler))
+     *     .then [...]
+     * </code>
+     * @param completeHandler the async handler
+     * @param <T> The type of input/output value.
+     * @return A handler.
+     */
     protected <T> Function<Throwable, Promise<T>> onReject(Handler<AsyncResult<Void>> completeHandler) {
         return whenComponent().onReject(completeHandler);
     }
 
+    /**
+     * Creates a when wrapper to forward a success to an async handler. Useful for creating a shorthand result in a
+     * when chain.
+     * <code>
+     *     [...]
+     *     .then(onSuccess(asyncHandler), onReject(asyncHandler))
+     *     .then [...]
+     * </code>
+     * @param completeHandler the async handler
+     * @param <T> The type of input/output value.
+     * @return A handler.
+     */
     protected <T> Function<T, Promise<T>> onSuccess(Handler<AsyncResult<Void>> completeHandler) {
         return whenComponent().onSuccess(completeHandler);
     }
