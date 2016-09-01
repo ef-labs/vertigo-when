@@ -1,8 +1,8 @@
-package com.englishtown.vertigo.when.impl;
+package com.eflabs.vertigo.when.impl;
 
 import com.englishtown.promises.Promise;
 import com.englishtown.promises.When;
-import com.englishtown.vertigo.when.WhenVertigoHandler;
+import com.eflabs.vertigo.when.WhenVertigoHandler;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

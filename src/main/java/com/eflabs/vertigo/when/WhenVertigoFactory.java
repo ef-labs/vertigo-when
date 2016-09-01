@@ -1,7 +1,7 @@
-package com.englishtown.vertigo.when;
+package com.eflabs.vertigo.when;
 
 import com.englishtown.promises.When;
-import net.kuujo.vertigo.component.ComponentInstance;
+import net.kuujo.vertigo.instance.ComponentInstance;
 
 /**
  * Factory for when vertigo classes.

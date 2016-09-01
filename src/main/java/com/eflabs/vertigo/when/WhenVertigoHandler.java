@@ -1,4 +1,4 @@
-package com.englishtown.vertigo.when;
+package com.eflabs.vertigo.when;
 
 import com.englishtown.promises.Promise;
 

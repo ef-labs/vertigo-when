@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.englishtown.vertigo</groupId>
+    <groupId>io.eflabs.vertigo</groupId>
     <artifactId>vertigo-when</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
@@ -14,7 +14,7 @@
 
     <properties>
         <vertx.version>3.2.1</vertx.version>
-        <vertigo.version>1.0.0-EF</vertigo.version>
+        <vertigo.version>0.8.0-SNAPSHOT</vertigo.version>
         <slf4j.version>1.7.10</slf4j.version>
         <log4j.version>2.4.1</log4j.version>
         <metrics.version>3.1.0</metrics.version>
@@ -24,7 +24,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.kuujo.vertigo</groupId>
+            <groupId>io.eflabs.vertigo</groupId>
             <artifactId>vertigo</artifactId>
             <version>${vertigo.version}</version>
         </dependency>

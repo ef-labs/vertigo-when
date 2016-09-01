@@ -1,9 +1,9 @@
-package com.englishtown.vertigo.when.impl;
+package com.eflabs.vertigo.when.impl;
 
 import com.englishtown.promises.When;
-import com.englishtown.vertigo.when.WhenComponentInstance;
-import com.englishtown.vertigo.when.WhenVertigoFactory;
-import net.kuujo.vertigo.component.ComponentInstance;
+import com.eflabs.vertigo.when.WhenComponentInstance;
+import com.eflabs.vertigo.when.WhenVertigoFactory;
+import net.kuujo.vertigo.instance.ComponentInstance;
 
 import javax.inject.Inject;
 
@@ -25,6 +25,6 @@ public class DefaultWhenVertigoFactory implements WhenVertigoFactory {
 
     @Override
     public WhenComponentInstance getComponentInstance(ComponentInstance component) {
-        return new DefaultWhenComponentInstance(component, when);
+        return new DefaultWhenComponentInstance(when, component);
     }
 }
