@@ -19,6 +19,7 @@
         <log4j.version>2.4.1</log4j.version>
         <disruptor.version>3.3.2</disruptor.version>
         <when.version>3.1.0</when.version>
+        <vertxwhen.version>4.1.0</vertxwhen.version>
     </properties>
 
     <dependencies>
@@ -36,6 +37,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.englishtown.vertx</groupId>
+            <artifactId>vertx-when</artifactId>
+            <version>${vertxwhen.version}</version>
         </dependency>
     </dependencies>
 
