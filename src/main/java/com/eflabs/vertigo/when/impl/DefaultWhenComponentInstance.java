@@ -7,6 +7,7 @@ import com.eflabs.vertigo.when.WhenComponentInstance;
 import com.eflabs.vertigo.when.WhenVertigoHandler;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import net.kuujo.vertigo.context.ComponentContext;
 import net.kuujo.vertigo.instance.ComponentInstance;
 import net.kuujo.vertigo.message.VertigoMessage;
 
@@ -51,6 +52,16 @@ public class DefaultWhenComponentInstance implements WhenComponentInstance {
     @Override
     public <T> WhenVertigoHandler<T> handler(VertigoMessage<?> message) {
         return new DefaultWhenVertigoHandler<>(when, message::handle);
+    }
+
+    @Override
+    public ComponentContext context() {
+        return componentInstance.context();
+    }
+
+    @Override
+    public ComponentInstance componentInstance() {
+        return componentInstance;
     }
 
 }

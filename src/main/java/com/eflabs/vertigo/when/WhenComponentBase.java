@@ -4,6 +4,7 @@ import com.englishtown.promises.Promise;
 import com.englishtown.promises.Thenable;
 import com.englishtown.promises.When;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import net.kuujo.vertigo.component.AbstractComponent;
 import net.kuujo.vertigo.instance.OutputCollector;
@@ -26,9 +27,9 @@ public abstract class WhenComponentBase extends AbstractComponent {
     }
 
     @Override
-    public void start() throws Exception {
-        super.start();
+    protected void initComponent(Future<Void> initFuture) throws Exception {
         this.whenComponent = whenVertigoFactory.getComponentInstance(this.component());
+        super.initComponent(initFuture);
     }
 
     public When when() {
@@ -111,30 +112,23 @@ public abstract class WhenComponentBase extends AbstractComponent {
         return whenComponent().onSuccess(completeHandler);
     }
 
-    protected <T> Handler<VertigoMessage<T>> safeHandler(
-            Function<Promise<VertigoMessage<T>>, Thenable<?>> handler) {
-
+    protected <T> Handler<VertigoMessage<T>> safeHandler(Function<Promise<VertigoMessage<T>>, Thenable<?>> handler) {
         return (message) -> {
             try {
-                Promise<VertigoMessage<T>> promise = when().resolve(message);
+                Promise<VertigoMessage<T>> promise = when.resolve(message);
                 Thenable<?> result = handler.apply(promise);
-                result.then(r -> null)
-                        .then(onSuccess(message), t -> {
-                            // Hack to ensure a useful response
-                            // Typically, null pointer exceptions have no message.
-                            if (t.getMessage() == null) {
-                                onReject(message).apply(new Exception(t.toString()));
-                            } else {
-                                onReject(message).apply(t);
-                            }
-                            return null;
-                        });
+                result.then(aVoid -> {
+                    message.ack();
+                    return null;
+                }, throwable -> {
+                    message.fail(throwable);
+                    return null;
+                });
             }
             catch (Throwable cause) {
                 message.fail(cause);
             }
         };
-
     }
 
 }
