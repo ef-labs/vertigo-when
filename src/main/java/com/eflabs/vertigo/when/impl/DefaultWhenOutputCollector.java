@@ -1,9 +1,9 @@
-package com.englishtown.vertigo.when.impl;
+package com.eflabs.vertigo.when.impl;
 
+import com.eflabs.vertigo.when.WhenOutputCollector;
+import com.eflabs.vertigo.when.WhenOutputPort;
 import com.englishtown.promises.When;
-import com.englishtown.vertigo.when.WhenOutputCollector;
-import com.englishtown.vertigo.when.WhenOutputPort;
-import net.kuujo.vertigo.io.OutputCollector;
+import net.kuujo.vertigo.instance.OutputCollector;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -19,7 +19,7 @@ public class DefaultWhenOutputCollector implements WhenOutputCollector {
 
     @Override
     public <T> WhenOutputPort<T> port(String port) {
-        return new DefaultWhenOutputPort<T>(output.port(port), output, when);
+        return new DefaultWhenOutputPort<>(output.port(port), when);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class DefaultWhenOutputCollector implements WhenOutputCollector {
     public Collection<WhenOutputPort> ports() {
         return output.ports()
                 .stream()
-                .map(p -> new DefaultWhenOutputPort(p, output, when))
+                .map(p -> new DefaultWhenOutputPort(p, when))
                 .collect(Collectors.toSet());
     }
 

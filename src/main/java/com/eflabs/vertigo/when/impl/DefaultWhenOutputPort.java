@@ -1,18 +1,17 @@
-package com.englishtown.vertigo.when.impl;
+package com.eflabs.vertigo.when.impl;
 
+import com.eflabs.vertigo.when.WhenOutputPort;
 import com.englishtown.promises.Deferred;
 import com.englishtown.promises.Promise;
 import com.englishtown.promises.When;
-import com.englishtown.vertigo.when.WhenOutputPort;
 import io.vertx.core.MultiMap;
-import net.kuujo.vertigo.io.OutputCollector;
-import net.kuujo.vertigo.io.port.OutputPort;
+import net.kuujo.vertigo.instance.OutputPort;
 
 public class DefaultWhenOutputPort<T> implements WhenOutputPort<T> {
     private final OutputPort<T> outputPort;
     private final When when;
 
-    public DefaultWhenOutputPort(OutputPort<T> outputPort, OutputCollector outputCollector, When when) {
+    public DefaultWhenOutputPort(OutputPort<T> outputPort, When when) {
         this.outputPort = outputPort;
         this.when = when;
     }
@@ -28,6 +27,11 @@ public class DefaultWhenOutputPort<T> implements WhenOutputPort<T> {
             }
         });
         return deferred.getPromise();
+    }
+
+    @Override
+    public String name() {
+        return outputPort.name();
     }
 
 }

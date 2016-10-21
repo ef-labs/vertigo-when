@@ -1,12 +1,14 @@
-package com.englishtown.vertigo.when;
+package com.eflabs.vertigo.when;
 
 import com.englishtown.promises.Promise;
+import com.englishtown.promises.Thenable;
 import com.englishtown.promises.When;
-import com.englishtown.vertigo.when.impl.DefaultWhenComponentInstance;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import net.kuujo.vertigo.component.AbstractComponent;
-import net.kuujo.vertigo.io.VertigoMessage;
+import net.kuujo.vertigo.instance.OutputCollector;
+import net.kuujo.vertigo.message.VertigoMessage;
 
 import java.util.function.Function;
 
@@ -25,9 +27,9 @@ public abstract class WhenComponentBase extends AbstractComponent {
     }
 
     @Override
-    public void start() throws Exception {
-        super.start();
+    protected void initComponent(Future<Void> initFuture) throws Exception {
         this.whenComponent = whenVertigoFactory.getComponentInstance(this.component());
+        super.initComponent(initFuture);
     }
 
     public When when() {
@@ -36,6 +38,16 @@ public abstract class WhenComponentBase extends AbstractComponent {
 
     public WhenComponentInstance whenComponent() {
         return whenComponent;
+    }
+
+    /**
+     * Returns the component's {@link OutputCollector}. This is the element of the
+     * component which provides an interface for sending messages to other components.
+     *
+     * @return The component's {@link OutputCollector}.
+     */
+    public WhenOutputCollector output() {
+        return whenComponent().output();
     }
 
     /**
@@ -98,6 +110,25 @@ public abstract class WhenComponentBase extends AbstractComponent {
      */
     protected <T> Function<T, Promise<T>> onSuccess(Handler<AsyncResult<Void>> completeHandler) {
         return whenComponent().onSuccess(completeHandler);
+    }
+
+    protected <T> Handler<VertigoMessage<T>> safeHandler(Function<Promise<VertigoMessage<T>>, Thenable<?>> handler) {
+        return (message) -> {
+            try {
+                Promise<VertigoMessage<T>> promise = when.resolve(message);
+                Thenable<?> result = handler.apply(promise);
+                result.then(aVoid -> {
+                    message.ack();
+                    return null;
+                }, throwable -> {
+                    message.fail(throwable);
+                    return null;
+                });
+            }
+            catch (Throwable cause) {
+                message.fail(cause);
+            }
+        };
     }
 
 }

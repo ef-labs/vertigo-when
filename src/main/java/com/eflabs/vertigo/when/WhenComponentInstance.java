@@ -1,10 +1,11 @@
-package com.englishtown.vertigo.when;
+package com.eflabs.vertigo.when;
 
 import com.englishtown.promises.Promise;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import net.kuujo.vertigo.component.ComponentInstance;
-import net.kuujo.vertigo.io.VertigoMessage;
+import net.kuujo.vertigo.context.ComponentContext;
+import net.kuujo.vertigo.instance.ComponentInstance;
+import net.kuujo.vertigo.message.VertigoMessage;
 
 import java.util.function.Function;
 
@@ -14,10 +15,10 @@ import java.util.function.Function;
 public interface WhenComponentInstance {
 
     /**
-     * Gets the underlying component instance.
-     * @return The underlying ComponentInstance
+     * Returns a wrapped input collector
+     * @return Wrapped input collector
      */
-    ComponentInstance getComponentInstance();
+    WhenInputCollector input();
 
     /**
      * Returns a wrapped output collector
@@ -72,5 +73,17 @@ public interface WhenComponentInstance {
     default <T> Function<T, Promise<T>> onSuccess(Handler<AsyncResult<Void>> completeHandler) {
         return this.<T>handler(completeHandler)::onSuccess;
     }
+
+    /**
+     * Returns the component context
+     * @return The context.
+     */
+    ComponentContext context();
+
+    /**
+     * Returns the component instance
+     * @return The component instance.
+     */
+    ComponentInstance componentInstance();
 
 }
