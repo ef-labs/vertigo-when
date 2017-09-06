@@ -112,11 +112,10 @@ public abstract class WhenComponentBase extends AbstractComponent {
         return whenComponent().onSuccess(completeHandler);
     }
 
-    protected <T> Handler<VertigoMessage<T>> safeHandler(Function<Promise<VertigoMessage<T>>, Thenable<?>> handler) {
+    protected <T> Handler<VertigoMessage<T>> safeHandler(Function<VertigoMessage<T>, Thenable<?>> handler) {
         return (message) -> {
             try {
-                Promise<VertigoMessage<T>> promise = when.resolve(message);
-                Thenable<?> result = handler.apply(promise);
+                Thenable<?> result = handler.apply(message);
                 result.then(aVoid -> {
                     message.ack();
                     return null;

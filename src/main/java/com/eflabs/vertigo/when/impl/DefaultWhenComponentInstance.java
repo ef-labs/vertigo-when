@@ -31,7 +31,7 @@ public class DefaultWhenComponentInstance implements WhenComponentInstance {
     @Override
     public WhenInputCollector input() {
         if (input == null) {
-            input = new DefaultWhenInputCollector(componentInstance.input(), when);
+            input = new DefaultWhenInputCollector(componentInstance.input());
         }
         return input;
     }

@@ -1,12 +1,12 @@
 package com.eflabs.vertigo.when.testtools;
 
+import com.eflabs.vertigo.when.PromiseComponentBase;
+import com.eflabs.vertigo.when.WhenVertigoFactory;
 import com.eflabs.vertigo.when.impl.DefaultWhenVertigoFactory;
 import com.englishtown.promises.Promise;
 import com.englishtown.promises.Thenable;
 import com.englishtown.promises.When;
 import com.englishtown.promises.WhenFactory;
-import com.eflabs.vertigo.when.PromiseComponentBase;
-import com.eflabs.vertigo.when.WhenVertigoFactory;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -75,16 +75,10 @@ public abstract class WhenVertigoTestBase extends VertxTestBase {
         }
 
         @Override
-        protected Thenable<?> handle(Promise<VertigoMessage<Object>> vertigoMessagePromise) {
-            return vertigoMessagePromise.then(message -> {
-                logger.info(this.context().name() + " received message " + message.body() + ", forwarding and acking.");
-                this.vertx.eventBus().send(this.forwardingAddress, message.body());
-                return null;
-            });
-        }
-
-        public void handle(VertigoMessage<Object> event) {
-            event.ack();
+        protected Thenable<?> handle(VertigoMessage<Object> vertigoMessage) {
+            logger.info(this.context().name() + " received message " + vertigoMessage.body() + ", forwarding and acking.");
+            this.vertx.eventBus().send(this.forwardingAddress, vertigoMessage.body());
+            return null;
         }
 
         public static JsonObject config(String address) {
@@ -99,26 +93,23 @@ public abstract class WhenVertigoTestBase extends VertxTestBase {
         }
 
         @Override
-        protected Thenable<?> handle(Promise<VertigoMessage<String>> vertigoMessagePromise) {
-            return vertigoMessagePromise
-                    .then(message -> {
-                        logger.info(this.context().name() + " received message " + message.body());
-                        String trace = message.body() + " > " + this.context().name();
-                        if(this.output().<String>ports().size() > 0) {
-                            List<Promise<String>> sendPromises = output()
-                                    .ports()
-                                    .stream()
-                                    .map(port -> output()
-                                            .<String>port(port.name())
-                                            .send(trace))
-                                    .collect(Collectors.toList());
-                            return when().all(sendPromises);
-                        }
-                        else {
-                            return when().resolve(null);
+        protected Thenable<?> handle(VertigoMessage<String> vertigoMessage) {
+            logger.info(this.context().name() + " received message " + vertigoMessage.body());
+            String trace = vertigoMessage.body() + " > " + this.context().name();
+            if(this.output().<String>ports().size() > 0) {
+                List<Promise<String>> sendPromises = output()
+                        .ports()
+                        .stream()
+                        .map(port -> output()
+                                .<String>port(port.name())
+                                .send(trace))
+                        .collect(Collectors.toList());
+                return when().all(sendPromises);
+            }
+            else {
+                return when().resolve(null);
 
-                        }
-                    });
+            }
         }
     }
 

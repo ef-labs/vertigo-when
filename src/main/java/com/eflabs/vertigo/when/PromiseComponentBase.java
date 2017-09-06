@@ -1,6 +1,5 @@
 package com.eflabs.vertigo.when;
 
-import com.englishtown.promises.Promise;
 import com.englishtown.promises.Thenable;
 import net.kuujo.vertigo.instance.InputCollector;
 import net.kuujo.vertigo.instance.OutputCollector;
@@ -29,7 +28,7 @@ public abstract class PromiseComponentBase<T> extends WhenComponentBase {
 
     }
 
-    protected abstract Thenable<?> handle(Promise<VertigoMessage<T>> messagePromise);
+    protected abstract Thenable<?> handle(VertigoMessage<T> messagePromise);
 
     /**
      * Returns the component's {@link InputCollector}. This is the element of the

@@ -2,7 +2,6 @@ package com.eflabs.vertigo.when.tests;
 
 import com.eflabs.vertigo.when.PromiseComponentBase;
 import com.eflabs.vertigo.when.testtools.WhenVertigoTestBase;
-import com.englishtown.promises.Promise;
 import com.englishtown.promises.Thenable;
 import net.kuujo.vertigo.VertigoException;
 import net.kuujo.vertigo.message.VertigoMessage;
@@ -49,7 +48,7 @@ public class Execute_Error_Test extends WhenVertigoTestBase {
         }
 
         @Override
-        protected Thenable<?> handle(Promise<VertigoMessage<String>> vertigoMessagePromise) {
+        protected Thenable<?> handle(VertigoMessage<String> vertigoMessage) {
             throw new VertigoException("Computer says no.");
         }
     }
