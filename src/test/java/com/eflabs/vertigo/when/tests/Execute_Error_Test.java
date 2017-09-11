@@ -1,10 +1,9 @@
 package com.eflabs.vertigo.when.tests;
 
-import com.eflabs.vertigo.when.PromiseComponentBase;
+import com.eflabs.vertigo.when.WhenComponentBase;
 import com.eflabs.vertigo.when.testtools.WhenVertigoTestBase;
-import com.englishtown.promises.Thenable;
+import io.vertx.core.Future;
 import net.kuujo.vertigo.VertigoException;
-import net.kuujo.vertigo.message.VertigoMessage;
 import net.kuujo.vertigo.network.NetworkConfig;
 import net.kuujo.vertigo.network.builder.NetworkBuilder;
 import net.kuujo.vertigo.reference.NetworkReference;
@@ -41,16 +40,26 @@ public class Execute_Error_Test extends WhenVertigoTestBase {
         await();
     }
 
-    public static class ErrorComponent extends PromiseComponentBase<String> {
+    public static class ErrorComponent extends WhenComponentBase {
 
         public ErrorComponent() {
             super(whenVertigoFactory);
         }
 
+        /**
+         * Override this method to register input port handlers and other initialization work.
+         */
         @Override
-        protected Thenable<?> handle(VertigoMessage<String> vertigoMessage) {
-            throw new VertigoException("Computer says no.");
+        protected void initComponent() throws Exception {
+            input()
+                    .ports()
+                    .forEach(port -> input()
+                            .port(port.name())
+                            .handler(message -> {
+                                throw new VertigoException("Computer says no.");
+                            }));
         }
+
     }
 
 }

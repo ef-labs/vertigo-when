@@ -1,9 +1,11 @@
 package com.eflabs.vertigo.when;
 
+import net.kuujo.vertigo.instance.OutputCollector;
+
 import java.util.Collection;
 
 /**
- * When wrapper for a Vertigo OutputCollector
+ * When wrapper for a Vertigo {@link OutputCollector}
  */
 public interface WhenInputCollector {
 
