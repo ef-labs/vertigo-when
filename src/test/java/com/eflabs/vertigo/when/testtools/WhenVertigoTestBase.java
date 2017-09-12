@@ -1,12 +1,13 @@
 package com.eflabs.vertigo.when.testtools;
 
+import com.eflabs.vertigo.when.WhenComponentBase;
+import com.eflabs.vertigo.when.WhenVertigoFactory;
 import com.eflabs.vertigo.when.impl.DefaultWhenVertigoFactory;
 import com.englishtown.promises.Promise;
 import com.englishtown.promises.Thenable;
 import com.englishtown.promises.When;
 import com.englishtown.promises.WhenFactory;
-import com.eflabs.vertigo.when.PromiseComponentBase;
-import com.eflabs.vertigo.when.WhenVertigoFactory;
+import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -19,6 +20,7 @@ import net.kuujo.vertigo.reference.NetworkReference;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class WhenVertigoTestBase extends VertxTestBase {
@@ -29,6 +31,7 @@ public abstract class WhenVertigoTestBase extends VertxTestBase {
 
     protected static Void VOID = null;
     private NetworkReference networkReference;
+
     protected abstract NetworkConfig createNetwork();
 
     public void setUp() throws Exception {
@@ -38,7 +41,7 @@ public abstract class WhenVertigoTestBase extends VertxTestBase {
         this.vertx.runOnContext((aVoid) -> {
             Vertigo vertigo = Vertigo.vertigo(this.vertx);
             vertigo.deployNetwork(network, (result) -> {
-                if(result.failed()) {
+                if (result.failed()) {
                     this.fail(result.cause().getMessage());
                 } else {
                     this.networkReference = result.result();
@@ -58,7 +61,7 @@ public abstract class WhenVertigoTestBase extends VertxTestBase {
         return this.networkReference;
     }
 
-    public static class EventBusForwardingComponent extends PromiseComponentBase<Object> {
+    public static class EventBusForwardingComponent extends WhenComponentBase {
         private String forwardingAddress;
 
         public EventBusForwardingComponent() {
@@ -66,25 +69,19 @@ public abstract class WhenVertigoTestBase extends VertxTestBase {
         }
 
         @Override
-        protected void initComponent() {
+        protected void initComponent() throws Exception {
             super.initComponent();
             this.forwardingAddress = this.context().config().getString("target");
-            if(this.forwardingAddress == null) {
+            if (this.forwardingAddress == null) {
                 throw new VertigoException(String.format("%s %s is missing a configuration value for \'target\'", new Object[]{this.getClass().getName(), this.name()}));
             }
+            register(this, this::handle);
         }
 
-        @Override
-        protected Thenable<?> handle(Promise<VertigoMessage<Object>> vertigoMessagePromise) {
-            return vertigoMessagePromise.then(message -> {
-                logger.info(this.context().name() + " received message " + message.body() + ", forwarding and acking.");
-                this.vertx.eventBus().send(this.forwardingAddress, message.body());
-                return null;
-            });
-        }
-
-        public void handle(VertigoMessage<Object> event) {
-            event.ack();
+        protected Thenable<?> handle(VertigoMessage<Object> vertigoMessage) {
+            logger.info(this.context().name() + " received message " + vertigoMessage.body() + ", forwarding and acking.");
+            this.vertx.eventBus().send(this.forwardingAddress, vertigoMessage.body());
+            return null;
         }
 
         public static JsonObject config(String address) {
@@ -92,34 +89,46 @@ public abstract class WhenVertigoTestBase extends VertxTestBase {
         }
     }
 
-    public static class AutoForwardingComponent extends PromiseComponentBase<String> {
+    public static class AutoForwardingComponent extends WhenComponentBase {
 
         public AutoForwardingComponent() {
             super(whenVertigoFactory);
         }
 
         @Override
-        protected Thenable<?> handle(Promise<VertigoMessage<String>> vertigoMessagePromise) {
-            return vertigoMessagePromise
-                    .then(message -> {
-                        logger.info(this.context().name() + " received message " + message.body());
-                        String trace = message.body() + " > " + this.context().name();
-                        if(this.output().<String>ports().size() > 0) {
-                            List<Promise<String>> sendPromises = output()
-                                    .ports()
-                                    .stream()
-                                    .map(port -> output()
-                                            .<String>port(port.name())
-                                            .send(trace))
-                                    .collect(Collectors.toList());
-                            return when().all(sendPromises);
-                        }
-                        else {
-                            return when().resolve(null);
-
-                        }
-                    });
+        protected void initComponent(Future<Void> initFuture) throws Exception {
+            super.initComponent(initFuture);
+            register(this, this::handle);
         }
+
+        protected Thenable<?> handle(VertigoMessage<String> vertigoMessage) {
+            logger.info(this.context().name() + " received message " + vertigoMessage.body());
+            String trace = vertigoMessage.body() + " > " + this.context().name();
+            if (this.output().<String>ports().size() > 0) {
+                List<Promise<String>> sendPromises = output()
+                        .ports()
+                        .stream()
+                        .map(port -> output()
+                                .<String>port(port.name())
+                                .send(trace))
+                        .collect(Collectors.toList());
+                return when().all(sendPromises);
+            } else {
+                return when().resolve(null);
+
+            }
+        }
+    }
+
+    private static <T> void register(WhenComponentBase component, Function<VertigoMessage<T>, Thenable<?>> handler) {
+        // Register all input ports automatically
+        component.input()
+                .ports()
+                .forEach(port -> {
+                    component.input()
+                            .<T>port(port.name())
+                            .handler(handler);
+                });
     }
 
 }
