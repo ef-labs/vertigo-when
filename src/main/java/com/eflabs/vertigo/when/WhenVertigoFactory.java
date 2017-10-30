@@ -10,12 +10,14 @@ public interface WhenVertigoFactory {
 
     /**
      * Returns the underlying when instance.
+     *
      * @return The underlying when instance.
      */
     When getWhen();
 
     /**
      * Creates a wrapper for the Vertigo ComponentInstance.
+     *
      * @param component The underlying ComponentInstance instance.
      * @return ComponentInstance wrapper.
      */
